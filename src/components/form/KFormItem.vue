@@ -12,13 +12,12 @@
 
     <!-- 3.校验错误信息 -->
     <p v-if="error">{{error}}</p>
-
-    <p>{{form.model}}</p>
-    <p>{{form.rules}}</p>
   </div>
 </template>
 
 <script>
+  import Schema from 'async-validator'
+
   export default {
     inject: ['form'],
     props: {
@@ -26,10 +25,40 @@
         type: String,
         default: ''
       },
+      prop: {
+        type: String, 
+        defalult: ''
+      }
     },
     data() {
       return {
         error: ''
+      }
+    },
+    mounted () {
+      this.$on('validate', () => {
+        this.validate()
+      })
+    },
+    methods: {
+      validate() {
+        // 校验方法
+        // 1.获取值和校验规则
+        const value = this.form.model[this.prop]
+        const rules = this.form.rules[this.prop]
+
+        // 2.创建validator实例
+        const validator = new Schema({[this.prop]: rules})
+
+        // 3.执行校验
+        return validator.validate({[this.prop]: value}, errors => {
+          if (errors) {
+            this.error = errors[0].message
+          } else {
+            // 通过
+            this.error = ''
+          }
+        })
       }
     },
   }

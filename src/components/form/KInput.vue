@@ -18,6 +18,10 @@
     methods: {
       onInput(e) {
         this.$emit('input', e.target.value)
+
+        // 使用FormItem派发校验事件
+        this.$parent.$emit('validate')
+
       }
     },
   }
